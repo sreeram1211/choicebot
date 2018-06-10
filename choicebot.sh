@@ -120,7 +120,7 @@ password="${password:-${default_password}}"
 fi
 
 
-printf "\e[1;77m[*] Trying to login as\e[0m\e[1;77m %s\e[0m\n" $username
+printf "\n\e[1;77m[*] Trying to login as\e[0m\e[1;77m %s\e[0m\n" $username
 check_login=$(curl -c cookies.txt 'https://www.instagram.com/accounts/login/ajax/' -H 'Cookie: csrftoken='$csrftoken'' -H 'X-Instagram-AJAX: 1' -H 'Referer: https://www.instagram.com/' -H 'X-CSRFToken:'$csrftoken'' -H 'X-Requested-With: XMLHttpRequest' --data 'username='$username'&password='$password'&intent' -L --compressed -s | grep -o '"authenticated": true')
 
 if [[ "$check_login" == *'"authenticated": true'* ]]; then
