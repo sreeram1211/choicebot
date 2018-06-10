@@ -55,7 +55,7 @@ printf "\n"
 }
 
 check_hashtag() {
-
+touch hashtags.txt
 total_hashtag=$(wc -l hashtags.txt | cut -d " " -f1)
 
 if [ $total_hashtag == "0" ]; then
