@@ -267,6 +267,8 @@ let turn+=1
 done
 unfollow
 createlist
+let count_media=0
+let count_owner=0
 control
 
 }
