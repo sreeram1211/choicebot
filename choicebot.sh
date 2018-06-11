@@ -242,9 +242,9 @@ printf "\e[1;77m[*] Trying to unfollow user id %s\e[0m\n" $owner_id
 
 done
 fi # total_follow
-printf "\e[1;92m[*] Total unfollows:\e[0m\e[1;77m %s\e[0m" $unfollows 
+printf "\e[1;92m[*] Total unfollows:\e[0m\e[1;77m %s\e[0m\n" $unfollows 
 if [[ $total_follow -gt 0 ]]; then
-printf "\e[1;92m[*] Remaining:\e[0m\e[1;77m %s\e[0m" $total_follow
+printf "\e[1;92m[*] Remaining:\e[0m\e[1;77m %s\e[0m\n" $total_follow
 fi 
 
 }
