@@ -101,7 +101,7 @@ printf "\e[1;93m[*] Unfollows: \e[0m\e[1;77m%s\e[0m\n" $total_unfollows
 res2=$(date +%s)
 secs=$(($res1-$res2))
 
-printf '\e[1;93m[*] Total time:\e[0m\e[1;77m %dd:%dh:%dm:%ds\e[0m\n' $(($secs/86400)) $(($secs%86400/3600)) $(($secs%3600/60)) \
+printf '\e[1;93m[*] Work time:\e[0m\e[1;77m %dd:%dh:%dm:%ds\e[0m\n' $(($secs/86400)) $(($secs%86400/3600)) $(($secs%3600/60)) \
   $(($secs%60))
 
 exit 1
