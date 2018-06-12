@@ -239,7 +239,6 @@ done
 unfollow() {
 unfollows=0
 
-total_follow=$(wc -l followed.txt | cut -d " " -f1)
 if [[ $total_follow -gt 0 ]]; then
 
 for ownerid in $(cat followed.txt);do
@@ -250,6 +249,7 @@ printf "\e[1;77m[*] Trying to unfollow user id %s\e[0m\n" $owner_id
 
 done
 fi # total_follow
+total_follow=$(wc -l followed.txt | cut -d " " -f1)
 session_unfollows=$(wc -l unfollows | cut -d " " -f1)
 printf "\e[1;92m[*] Total unfollows:\e[0m\e[1;77m %s\e[0m\n" $session_unfollows 
 if [[ $total_follow -gt 0 ]]; then
