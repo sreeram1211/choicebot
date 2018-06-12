@@ -1,4 +1,4 @@
-# Choicebot v1.0
+# Choicebot v1.1
 ## Author: github.com/thelinuxchoice
 ## IG: instagram.com/thelinuxchoice
 ### Don't copy this code without give me the credits, bitch! 
