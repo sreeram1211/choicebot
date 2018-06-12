@@ -1,5 +1,5 @@
 #!/bin/bash
-# ChoiceBot v1.0
+# ChoiceBot v1.1
 # Coded by: @thelinuxchoice (Don't change!)
 # Github: www.github.com/thelinuxchoice/choicebot
 # Instagram: @thelinuxchoice
@@ -47,11 +47,17 @@ printf "\e[1;92m   ____ _           _          ____        _    \e[0m\n"
 printf "\e[1;92m  / ___| |__   ___ (_) ___ ___| __ )  ___ | |_  \e[0m\n"
 printf "\e[1;92m | |   | '_ \ / _ \| |/ __/ _ \  _ \ / _ \| __| \e[0m\n"
 printf "\e[1;92m | |___| | | | (_) | | (_|  __/ |_) | (_) | |_  \e[0m\n"
-printf "\e[1;92m  \____|_| |_|\___/|_|\___\___|____/ \___/ \__| \e[0mv1.0\n"
+printf "\e[1;92m  \____|_| |_|\___/|_|\___\___|____/ \___/ \__| \e[0mv1.1\n"
 printf "\n"
 printf "\e[1;77m\e[45m        Instagram bot by @thelinuxchoice       \e[0m\n"
 printf "\n"                                    
 
+}
+
+dependencies() {
+
+
+command -v curl > /dev/null 2>&1 || { echo >&2 "I require curl but it's not installed. Run apt-get install curl"; exit 1; }
 }
 
 check_hashtag() {
@@ -59,22 +65,24 @@ touch hashtags.txt
 total_hashtag=$(wc -l hashtags.txt | cut -d " " -f1)
 
 if [ $total_hashtag == "0" ]; then
-printf "\e[1;93m[!] Please, put your hashtags on file (1 per line): \e[0m\e[1;77m hashtags.txt\e[0m\n"
+printf "\e[1;93m[!] Please, put your hashtags on file: \e[0m\e[1;77m hashtags.txt\e[0m\e[1;93m (1 per line, without #)\e[0m\n"
 exit 1
 fi
 
 }
 
 stop() {
-touch likes comments follows unfollows
-
+touch likes comments follows unfollows followedtotal.txt
+cat follows >> followedtotal.txt
+cat unfollows >> unfollowedtotal.txt
 session_likes=$(wc -l likes | cut -d " " -f1)
 session_comments=$(wc -l comments | cut -d " " -f1)
 session_follows=$(wc -l follows | cut -d " " -f1)
 session_unfollows=$(wc -l unfollows | cut -d " " -f1)
 total_likes=$(wc -l liked.txt | cut -d " " -f1)
 total_comments=$(wc -l commented.txt | cut -d " " -f1)
-total_follows=$(wc -l followed.txt | cut -d " " -f1)
+total_follows=$(wc -l followedtotal.txt | cut -d " " -f1)
+total_unfollows=$(wc -l unfollowedtotal.txt | cut -d " " -f1)
 rm -rf likes comments follows unfollows
 printf "\e[1;31m[*] Bot stopped.\e[0m\n"
 printf "\n"
@@ -89,7 +97,7 @@ printf "\e[1;92m[*] Statistics total:\e[0m\n"
 printf "\e[1;93m[*] Likes: \e[0m\e[1;77m%s\e[0m\n" $total_likes
 printf "\e[1;93m[*] Comments: \e[0m\e[1;77m%s\e[0m\n" $total_comments
 printf "\e[1;93m[*] Follows: \e[0m\e[1;77m%s\e[0m\n" $total_follows
-
+printf "\e[1;93m[*] Unfollows: \e[0m\e[1;77m%s\e[0m\n" $total_unfollows
 res2=$(date +%s)
 secs=$(($res1-$res2))
 
@@ -121,7 +129,7 @@ check_login=$(curl -c cookies.txt 'https://www.instagram.com/accounts/login/ajax
 if [[ "$check_login" == *'"authenticated": true'* ]]; then
 printf "\e[1;92m[*] Login Successful!\e[0m\n"
 else
-printf "\e[1;93m[!] Check your login data!\n\e[0m"
+printf "\e[1;93m[!] Check your login data or IP! Dont use Tor, VPN, Proxy. It's requires your usual IP.\n\e[0m"
 exit 1
 fi
 
@@ -130,13 +138,13 @@ fi
 createlist() {
 touch liked.txt commented.txt followed.txt
 rm -rf hashtags_id.txt owner_id.txt
-
+IFS=$'\n'
 for hashtag in $(cat hashtags.txt);do
 
 printf "\e[1;77m[*] Creating media list for hashtag %s\e[0m\n" $hashtag
-{( trap '' SIGINT && curl -s https://www.instagram.com/explore/tags/$hashtag/?__a=1 | grep  -o '"node":{"comments_disabled":false,"id":"..................[0-9]'  | cut -d ":" -f4 | tr -d '\"' | head -n 20 >> hashtags_id.txt )} & wait $!;
+{( trap '' SIGINT && curl -s https://www.instagram.com/explore/tags/$hashtag/?__a=1 | grep  -o '"node":{"comments_disabled":false,"id":"..................[0-9]'  | cut -d ":" -f4 | tr -d '\"' | head -n 10 >> hashtags_id.txt )} & wait $!;
 printf "\e[1;77m[*] Creating follower list for hashtag %s\e[0m\n" $hashtag
-{( trap '' SIGINT && curl -s https://www.instagram.com/explore/tags/hacking/?__a=1 | grep  -o '"owner":{"id":".........[0-9]"'  | cut -d ":" -f3 | tr -d '\"' | head -n 20 >> owner_id.txt )} & wait $!;
+{( trap '' SIGINT && curl -s https://www.instagram.com/explore/tags/hacking/?__a=1 | grep  -o '"owner":{"id":".........[0-9]"'  | cut -d ":" -f3 | tr -d '\"' | head -n 10 >> owner_id.txt )} & wait $!;
 
 done
 
@@ -242,7 +250,8 @@ printf "\e[1;77m[*] Trying to unfollow user id %s\e[0m\n" $owner_id
 
 done
 fi # total_follow
-printf "\e[1;92m[*] Total unfollows:\e[0m\e[1;77m %s\e[0m\n" $unfollows 
+session_unfollows=$(wc -l unfollows | cut -d " " -f1)
+printf "\e[1;92m[*] Total unfollows:\e[0m\e[1;77m %s\e[0m\n" $session_unfollows 
 if [[ $total_follow -gt 0 ]]; then
 printf "\e[1;92m[*] Remaining:\e[0m\e[1;77m %s\e[0m\n" $total_follow
 fi 
@@ -261,7 +270,6 @@ total_owner=$(wc -l owner_id.txt | cut -d " " -f1)
 
 while [ $count_media -lt $total_media ] && [ "$count_owner" -lt "$total_owner" ]; do
 bot
-let turn+=1
 owner_follow
 let turn+=1
 done
@@ -269,10 +277,15 @@ unfollow
 createlist
 let count_media=0
 let count_owner=0
+let startline_bot=1
+let endline_bot=1
+let startline_follow=1
+let endline_follow=1
 control
 
 }
 banner
+dependencies
 check_hashtag
 login_user
 printf "\e[1;93m[*] Bot started at:\e[0m\e[1;77m %s\e[0m\n" $start_date
