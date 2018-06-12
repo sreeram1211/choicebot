@@ -238,22 +238,22 @@ done
 
 unfollow() {
 unfollows=0
-
-if [[ $total_follow -gt 0 ]]; then
+total_unfollow=$(wc -l followed.txt | cut -d " " -f1)
+if [[ $total_unfollow -gt 0 ]]; then
 
 for ownerid in $(cat followed.txt);do
 
-printf "\e[1;77m[*] Trying to unfollow user id %s\e[0m\n" $owner_id
+printf "\e[1;77m[*] Trying to unfollow user id %s\e[0m\n" $ownerid
 
 {( trap '' SIGINT && unfollow=$(curl -b cookies.txt -H 'Cookie: csrftoken='$csrftoken'' -H 'X-Instagram-AJAX: 1' -H 'Referer: https://www.instagram.com/' -H 'X-CSRFToken:'$csrftoken'' -H 'X-Requested-With: XMLHttpRequest' "https://www.instagram.com/web/friendships/$ownerid/unfollow/" -s -L --request POST | grep -o '"status": "ok"'); if [[ "$unfollow" == *'"status": "ok"'* ]]; then printf "\e[1;92m[*] User unfollowed\e[0m\n" ; awk '!/'$ownerid'/' followed.txt > temp && mv temp followed.txt ; let unfollows++ ; echo $unfollows >> unfollows ; sleep 30 ; else printf "\e[1;93m[!] User not unfollowed\e[0m\n" ; sleep 300 ; fi )} & wait $!;
 
 done
 fi # total_follow
-total_follow=$(wc -l followed.txt | cut -d " " -f1)
+remain=$(wc -l followed.txt | cut -d " " -f1)
 session_unfollows=$(wc -l unfollows | cut -d " " -f1)
 printf "\e[1;92m[*] Total unfollows:\e[0m\e[1;77m %s\e[0m\n" $session_unfollows 
 if [[ $total_follow -gt 0 ]]; then
-printf "\e[1;92m[*] Remaining:\e[0m\e[1;77m %s\e[0m\n" $total_follow
+printf "\e[1;92m[*] Remaining:\e[0m\e[1;77m %s\e[0m\n" $remain
 fi 
 
 }
