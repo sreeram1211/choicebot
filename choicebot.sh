@@ -237,6 +237,7 @@ done
 
 
 unfollow() {
+touch unfollows
 unfollows=0
 total_unfollow=$(wc -l followed.txt | cut -d " " -f1)
 if [[ $total_unfollow -gt 0 ]]; then
